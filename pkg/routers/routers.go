@@ -1,30 +1,31 @@
 package routers
 
 import (
-	"encoding/json"
-	"net/http"
-
+	"database/sql"
+	"gochi/app/controllers"
 	"gochi/app/models"
+	"gochi/utils"
+	"log"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	_ "github.com/lib/pq"
 )
 
 func Public_routers(r *chi.Mux) {
+	db, err := sql.Open("postgres", utils.ConnectionBuilder("postgres"))
+	if err != nil {
+		log.Fatalf("Error establishing connection to DB: %v", err)
+	}
+	env := &models.Env{Db: db}
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hi"))
 	})
 
 	r.Route("/users", func(r chi.Router) {
-		r.With(middleware.RequestID).Get("/", func(w http.ResponseWriter, r *http.Request) {
-			j, err := json.Marshal(models.Employee{
-				Name: "Natcel",
-				Age:  24,
-			})
-			if err != nil {
-				w.Write([]byte("Error while encoding employee"))
-			}
-			w.Write([]byte(j))
-		})
+		r.With(middleware.RequestID).Get("/", controllers.GetAllusers(env))
+		r.With(middleware.RequestID).Get("/{id}", controllers.GetUserByID(env))
 	})
 }
