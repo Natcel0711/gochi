@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -79,7 +80,7 @@ func CreateUser(env *models.Env) http.HandlerFunc {
 		}
 		log.Println(user)
 		var id int
-		err = env.Db.QueryRow(`INSERT INTO public.users (name, email, password) VALUES($1,$2,$3) RETURNING id`, user.Name, user.Email, user.Password).Scan(&id)
+		err = env.Db.QueryRow(`INSERT INTO public.users (name, email, password, created_at, updated_at) VALUES($1,$2,$3,$4,$5) RETURNING id`, user.Name, user.Email, user.Password, time.Now(), time.Now()).Scan(&id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
