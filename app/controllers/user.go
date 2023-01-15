@@ -111,19 +111,19 @@ func CreateUser(env *models.Env) http.HandlerFunc {
 
 func UpdateUser(env *models.Env) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user models.CreatedUser
+		var user models.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		row := env.Db.QueryRow("SELECT name, email, password FROM public.users WHERE email=$1", user.Email)
-		var foundUser models.CreatedUser
-		switch err := row.Scan(&foundUser.Name, &foundUser.Email, &foundUser.Password); err {
+		row := env.Db.QueryRow("SELECT id, name, email, password FROM public.users WHERE id=$1", user.Id)
+		var foundUser models.User
+		switch err := row.Scan(&foundUser.Id, &foundUser.Name, &foundUser.Email, &foundUser.Password); err {
 		case sql.ErrNoRows:
 			w.Write([]byte("No user exists"))
 		case nil:
-			row := env.Db.QueryRow("UPDATE public.users SET name = $1, password = $2 WHERE email = $3", user.Name, user.Password, user.Email)
+			row := env.Db.QueryRow("UPDATE public.users SET name = $1, password = $2, email=$3 WHERE id = $4", user.Name, user.Password, user.Email, user.Id)
 			if row.Err() != nil {
 				w.Write([]byte(fmt.Sprintf("Error updating user: %v", err)))
 			}

@@ -27,7 +27,7 @@ func Public_routers(r *chi.Mux) {
 	r.Route("/users", func(r chi.Router) {
 		r.With(middleware.RequestID).Get("/", controllers.GetAllUsers(env))
 		r.With(middleware.RequestID).Get("/{id}", controllers.GetUserByID(env))
-		r.With(middleware.RequestID).Get("/{email}", controllers.GetUserByEmail(env))
+		r.With(middleware.RequestID).Get("/ByEmail/{email}", controllers.GetUserByEmail(env))
 		r.With(middleware.RequestID).Post("/", controllers.CreateUser(env))
 		r.With(middleware.RequestID).Put("/", controllers.UpdateUser(env))
 	})
