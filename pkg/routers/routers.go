@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/lib/pq"
 )
 
@@ -25,10 +24,10 @@ func Public_routers(r *chi.Mux) {
 	})
 
 	r.Route("/users", func(r chi.Router) {
-		r.With(middleware.RequestID).Get("/", controllers.GetAllUsers(env))
-		r.With(middleware.RequestID).Get("/{id}", controllers.GetUserByID(env))
-		r.With(middleware.RequestID).Get("/ByEmail/{email}", controllers.GetUserByEmail(env))
-		r.With(middleware.RequestID).Post("/", controllers.CreateUser(env))
-		r.With(middleware.RequestID).Put("/", controllers.UpdateUser(env))
+		r.Get("/", controllers.GetAllUsers(env))
+		r.Get("/{id}", controllers.GetUserByID(env))
+		r.Get("/ByEmail/{email}", controllers.GetUserByEmail(env))
+		r.Post("/", controllers.CreateUser(env))
+		r.Put("/", controllers.UpdateUser(env))
 	})
 }
